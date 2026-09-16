@@ -12,12 +12,12 @@ jobs:
       - name: Fix Gradle
         run: |
           rm -rf android
-          flutter create. --platforms=android
+          flutter create. --platforms android
           flutter pub get
       - name: Build APK
         run: flutter build apk --release
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: ZFANZ-APK
+          name: ZFANZ-APK-ONLINE
           path: build/app/outputs/flutter-apk/app-release.apk
