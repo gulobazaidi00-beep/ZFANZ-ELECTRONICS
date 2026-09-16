@@ -10,22 +10,20 @@ jobs:
           flutter-version: '3.22.0'
           channel: 'stable'
       - run: |
-          # 1. Create android folder if missing
           if [ ! -d "android" ]; then
-            flutter create . --platforms=android --project-name zfanz_electronics --org com.zfanz.electronics
+            flutter create . --platforms=android --project-name zfanz_electronics --org com.zfanz.electronics || true
           fi
-          # 2. Add INTERNET permission for videos
+          # Add internet for videos
           MANIFEST="android/app/src/main/AndroidManifest.xml"
-          if ! grep -q "INTERNET" "$MANIFEST"; then
-            sed -i 's/<manifest.*>/&\n    <uses-permission android:name="android.permission.INTERNET" \/>/' "$MANIFEST"
+          if [ -f "$MANIFEST" ] && ! grep -q "INTERNET" "$MANIFEST"; then
+            sed -i 's/<manifest.*>/&\n    <uses-permission android:name="android.permission.INTERNET" \/>/' "$MANIFEST" || true
           fi
-          # 3. Copy your ZFANZ icon if you have it
-          if [ -f "assets/icon.png" ]; then
-            cp assets/icon.png android/app/src/main/res/mipmap-hdpi/ic_launcher.png || true
-            cp assets/icon.png android/app/src/main/res/mipmap-mdpi/ic_launcher.png || true
-            cp assets/icon.png android/app/src/main/res/mipmap-xhdpi/ic_launcher.png || true
-            cp assets/icon.png android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png || true
-            cp assets/icon.png android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png || true
+          # Only copy icon if it's a real PNG
+          if [ -f "assets/icon.png" ] && file assets/icon.png | grep -q "PNG"; then
+            for d in android/app/src/main/res/mipmap-*; do cp assets/icon.png "$d/ic_launcher.png" || true; done
+            echo "Icon copied OK"
+          else
+            echo "Skipping icon - not a valid PNG, using Flutter default"
           fi
           flutter pub get
           flutter build apk --release
