@@ -10,16 +10,17 @@ jobs:
           flutter-version: '3.22.0'
           channel: 'stable'
       - run: |
-          flutter create . --platforms=android --project-name zfanz_electronics --org com.zfanz.electronics
-          # REPLACE ICON WITH YOURS IF EXISTS
-          if [ -f "assets/icon.png" ]; then
-            for d in android/app/src/main/res/mipmap-*; do
-              cp assets/icon.png $d/ic_launcher.png
-              cp assets/icon.png $d/launcher_icon.png || true
-            done
+          if [ ! -d "android" ]; then
+            flutter create . --platforms=android --project-name zfanz_electronics --org com.zfanz.electronics
           fi
-          # FIX APP NAME
-          sed -i 's/android:label="[^"]*"/android:label="ZFANZ ELECTRONICS"/' android/app/src/main/AndroidManifest.xml || true
+          # Only copy icon if it exists and is valid PNG
+          if file assets/icon.png | grep -q PNG; then
+            cp assets/icon.png android/app/src/main/res/mipmap-hdpi/ic_launcher.png
+            cp assets/icon.png android/app/src/main/res/mipmap-mdpi/ic_launcher.png
+            cp assets/icon.png android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
+            cp assets/icon.png android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
+            cp assets/icon.png android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
+          fi
           flutter pub get
           flutter build apk --release
       - uses: actions/upload-artifact@v4
