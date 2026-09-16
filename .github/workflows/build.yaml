@@ -8,13 +8,11 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.22.0'
-      - name: Fix Gradle
-        run: |
-          rm -rf android
-          flutter create .
-          flutter pub get
       - name: Build APK
-        run: flutter build apk --release
+        run: |
+          flutter create. --project-name zfanz_electronics --platforms=android --org com.zfanz --no-pub
+          flutter pub get
+          flutter build apk --release
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
