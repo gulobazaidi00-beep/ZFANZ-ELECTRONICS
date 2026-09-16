@@ -11,7 +11,7 @@ jobs:
       - name: Fix Gradle
         run: |
           rm -rf android
-          flutter create.
+          flutter create .
           flutter pub get
       - name: Build APK
         run: flutter build apk --release
