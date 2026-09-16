@@ -12,7 +12,7 @@ jobs:
       - name: Fix Gradle
         run: |
           rm -rf android
-          flutter create. --platforms android
+          flutter create. --platforms=android
           flutter pub get
       - name: Build APK
         run: flutter build apk --release
