@@ -18,3 +18,5 @@ flutter_launcher_icons:
   android: "launcher_icon"
   image_path: "assets/icon.png"
   min_sdk_android: 21
+dependencies:
+  url_launcher: ^6.2.5
