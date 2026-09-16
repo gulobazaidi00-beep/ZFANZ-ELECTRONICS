@@ -1,5 +1,5 @@
 name: Build APK
-on: push
+on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -8,26 +8,17 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.22.0'
-          channel: 'stable'
-      - run: |
-          if [ ! -d "android" ]; then
-            flutter create . --platforms=android --project-name zfanz_electronics --org com.zfanz.electronics || true
+      - name: Create Android folder if missing
+        run: |
+          if [! -d "android" ]; then
+            flutter create. --platforms=android
           fi
-          # Add internet for videos
-          MANIFEST="android/app/src/main/AndroidManifest.xml"
-          if [ -f "$MANIFEST" ] && ! grep -q "INTERNET" "$MANIFEST"; then
-            sed -i 's/<manifest.*>/&\n    <uses-permission android:name="android.permission.INTERNET" \/>/' "$MANIFEST" || true
-          fi
-          # Only copy icon if it's a real PNG
-          if [ -f "assets/icon.png" ] && file assets/icon.png | grep -q "PNG"; then
-            for d in android/app/src/main/res/mipmap-*; do cp assets/icon.png "$d/ic_launcher.png" || true; done
-            echo "Icon copied OK"
-          else
-            echo "Skipping icon - not a valid PNG, using Flutter default"
-          fi
+      - name: Build APK
+        run: |
           flutter pub get
           flutter build apk --release
-      - uses: actions/upload-artifact@v4
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
         with:
-          name: zfanz-apk
+          name: ZFANZ-APK
           path: build/app/outputs/flutter-apk/app-release.apk
